@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { createFileRoute } from "@tanstack/react-router";
 import { api } from "convex/_generated/api";
 import { useQuery, useMutation } from "convex/react";
@@ -50,13 +52,9 @@ function App() {
             <option value="strength">Strength</option>
           </select>
 
-          <button
-            onClick={onCreateRoom}
-            className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-black/90 disabled:opacity-50"
-            disabled={!!roomId}
-          >
+          <Button onClick={onCreateRoom} disabled={!!roomId} variant="outline">
             {roomId ? "Room Created ✅" : "Create Room"}
-          </button>
+          </Button>
         </div>
 
         {roomId && (
@@ -72,50 +70,27 @@ function App() {
         <div className="mt-3 grid grid-cols-1 gap-3">
           <label className="text-sm">
             <span className="mb-1 block text-gray-600">Exercise</span>
-            <input
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/20"
-              value={exercise}
-              onChange={(e) => setExercise(e.target.value)}
-            />
+            <Input value={exercise} onChange={(e) => setExercise(e.target.value)} />
           </label>
 
           <div className="grid grid-cols-3 gap-3">
             <label className="text-sm">
               <span className="mb-1 block text-gray-600">Load (kg)</span>
-              <input
-                type="number"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/20"
-                value={String(load)}
-                onChange={(e) => setLoad(Number(e.target.value))}
-              />
+              <Input type="number" value={String(load)} onChange={(e) => setLoad(Number(e.target.value))} />
             </label>
             <label className="text-sm">
               <span className="mb-1 block text-gray-600">Reps</span>
-              <input
-                type="number"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/20"
-                value={String(reps)}
-                onChange={(e) => setReps(Number(e.target.value))}
-              />
+              <Input type="number" value={String(reps)} onChange={(e) => setReps(Number(e.target.value))} />
             </label>
             <label className="text-sm">
               <span className="mb-1 block text-gray-600">RIR</span>
-              <input
-                type="number"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/20"
-                value={String(rir)}
-                onChange={(e) => setRir(Number(e.target.value))}
-              />
+              <Input type="number" value={String(rir)} onChange={(e) => setRir(Number(e.target.value))} />
             </label>
           </div>
 
-          <button
-            onClick={onLogSet}
-            disabled={!roomId}
-            className="w-full rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          <Button onClick={onLogSet} disabled={!roomId} variant="outline">
             Log Set
-          </button>
+          </Button>
           {!roomId && <p className="text-xs text-red-500">Create a room first.</p>}
         </div>
       </section>
