@@ -27,7 +27,12 @@ function createDeviceId(): string {
     return id;
   } catch (error) {
     console.warn("Failed to access localStorage:", error);
-    return `fallback-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const fallbackId =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? `fallback-${crypto.randomUUID()}`
+        : `fallback-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+    return fallbackId;
   }
 }
 

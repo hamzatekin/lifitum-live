@@ -117,7 +117,7 @@ export function HomePage() {
             <Input value={exercise} onChange={(e) => setExercise(e.target.value)} />
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-3 gap-3">
             <div>
               <Label className="mb-1 block">Load (kg)</Label>
               <Input type="number" value={String(load)} onChange={(e) => setLoad(Number(e.target.value))} />
