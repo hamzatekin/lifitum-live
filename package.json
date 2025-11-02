@@ -7,10 +7,14 @@
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "serve": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "convex:dev": "convex dev"
   },
   "dependencies": {
     "@convex-dev/react-query": "0.0.0-alpha.11",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/postcss": "^4.1.16",
     "@tailwindcss/vite": "^4.0.6",
@@ -32,7 +36,8 @@
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.16",
     "tailwindcss-animate": "^1.0.7",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",

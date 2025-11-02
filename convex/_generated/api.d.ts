@@ -8,7 +8,9 @@
  * @module
  */
 
+import type * as rooms from "../rooms.js";
 import type * as sets from "../sets.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -25,7 +27,9 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  rooms: typeof rooms;
   sets: typeof sets;
+  users: typeof users;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 
