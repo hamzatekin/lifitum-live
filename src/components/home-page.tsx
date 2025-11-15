@@ -4,14 +4,20 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useGlobalStore } from "@/store/global.store";
 import { api } from "convex/_generated/api";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { SubscriptionStatus } from "@/components/subscription-status";
+import {
+  useEnsureAnonymousUser,
+  useRestoreActiveSession,
+  useStartWorkoutSession,
+  useEndWorkoutSession,
+  useLogSetWithValidation,
+} from "@/hooks";
 
 export function HomePage() {
-  const [goal, setGoal] = useState<"hypertrophy" | "strength">("hypertrophy");
   const [exercise, setExercise] = useState("Bench Press");
   const [load, setLoad] = useState<number>(60);
   const [reps, setReps] = useState<number>(8);
@@ -19,55 +25,42 @@ export function HomePage() {
 
   const deviceId = useGlobalStore((s) => s.deviceId);
   const userId = useGlobalStore((s) => s.userId);
-  const roomId = useGlobalStore((s) => s.roomId);
+  const sessionId = useGlobalStore((s) => s.sessionId);
   const setUserId = useGlobalStore((s) => s.setUserId);
-  const setRoomId = useGlobalStore((s) => s.setRoomId);
+  const setSessionId = useGlobalStore((s) => s.setSessionId);
 
-  const ensureUser = useMutation(api.users.ensureUser); // was React Query → now Convex
-  const createRoom = useMutation(api.rooms.createRoom); // was React Query → now Convex
-  const logSet = useMutation(api.sets.logSet); // was React Query → now Convex
-  const sets = useQuery(api.sets.getSets, roomId ? { roomId: roomId as any } : "skip"); // live
+  const sets = useQuery(api.sets.getSets, sessionId ? { sessionId: sessionId as any } : "skip");
+  const session = useQuery(api.sessions.getSession, sessionId ? { sessionId: sessionId as any } : "skip");
+  const subscriptionStatus = useQuery(api.autumn.getSubscriptionStatus, userId ? { userId: userId as any } : "skip");
+  const upgradeSubscription = useMutation(api.autumn.upgradeSubscription);
 
-  useEffect(() => {
-    if (!deviceId || userId) return;
-    ensureUser({ deviceId }).then((id: any) => setUserId(id));
-  }, [deviceId, userId, ensureUser, setUserId]);
+  useEnsureAnonymousUser(deviceId, userId, setUserId);
+  useRestoreActiveSession(userId, sessionId, setSessionId);
+  const { onStartSession, starting } = useStartWorkoutSession(userId, setSessionId);
+  const { onEndSession, ending } = useEndWorkoutSession(userId);
+  const { onLogSet: handleLogSet, logging, lastFeedback, setLastFeedback } = useLogSetWithValidation(userId, sessionId);
 
-  const [creating, setCreating] = useState(false);
-  const onCreateRoom = async () => {
-    if (!userId || roomId) return;
-    setCreating(true);
-    try {
-      const id = await createRoom({ ownerId: userId as any, goal });
-      setRoomId(id as any);
-    } finally {
-      setCreating(false);
-    }
+  const handleUpgrade = async (tier: string) => {
+    const mockCustomerId = `cust_${Date.now()}`;
+    await upgradeSubscription({ userId: userId as any, newTier: tier, autumnCustomerId: mockCustomerId });
+    alert(`Upgraded to ${tier}! This would normally open Autumn's payment flow.`);
   };
 
-  const [logging, setLogging] = useState(false);
   const onLogSet = async () => {
-    if (!roomId || !userId) return;
-    setLogging(true);
-    try {
-      await logSet({
-        roomId: roomId as any,
-        userId: userId as any,
-        exercise,
-        load: Number(load),
-        reps: Number(reps),
-        rir: Number(rir),
-      });
-    } finally {
-      setLogging(false);
-    }
+    await handleLogSet({ exercise, load, reps, rir });
+  };
+
+  const handleEndSession = async () => {
+    if (!sessionId) return;
+    await onEndSession(sessionId);
+    setSessionId(null as any);
   };
 
   return (
     <div className="mx-auto w-full max-w-2xl p-4 space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">User & Room</CardTitle>
+          <CardTitle className="text-lg">User & Workout Session</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-sm text-muted-foreground">
@@ -81,27 +74,26 @@ export function HomePage() {
           </div>
 
           <div className="flex flex-wrap items-end gap-3">
-            <div className="min-w-[180px]">
-              <Label className="mb-1 block">Goal</Label>
-              <Select defaultValue={goal} onValueChange={(v) => setGoal(v as any)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select goal" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="hypertrophy">Hypertrophy</SelectItem>
-                  <SelectItem value="strength">Strength</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button onClick={onCreateRoom} disabled={!userId || !!roomId || creating} className="mt-6">
-              {roomId ? "Room Created ✅" : creating ? "Creating…" : "Create Room"}
+            <Button onClick={onStartSession} disabled={!userId || !!sessionId || starting} className="mt-6">
+              {sessionId ? "Session Active 🟢" : starting ? "Starting…" : "Start Session"}
             </Button>
+            {sessionId && (
+              <Button onClick={handleEndSession} disabled={!sessionId || ending} variant="secondary">
+                {ending ? "Ending…" : "End Session"}
+              </Button>
+            )}
           </div>
 
-          {roomId && (
+          {sessionId && (
             <div className="text-xs text-muted-foreground break-all">
-              <span className="font-medium text-foreground">Room ID:</span> <code>{roomId}</code>
+              <span className="font-medium text-foreground">Session ID:</span> <code>{sessionId}</code>
+              {session?.endedAt ? (
+                <p className="text-red-500 mt-1">Session ended at {new Date(session.endedAt).toLocaleTimeString()}</p>
+              ) : (
+                <p className="text-green-500 mt-1">
+                  Session started at {new Date(session?.startedAt || 0).toLocaleTimeString()}
+                </p>
+              )}
             </div>
           )}
         </CardContent>
@@ -132,21 +124,49 @@ export function HomePage() {
             </div>
           </div>
 
-          <Button onClick={onLogSet} disabled={!roomId || !userId || logging}>
+          <Button onClick={onLogSet} disabled={!sessionId || !userId || logging}>
             {logging ? "Logging…" : "Log Set"}
           </Button>
 
-          {!roomId && <p className="text-xs text-destructive">Create a room first.</p>}
+          {!sessionId && <p className="text-xs text-destructive">Start a session first.</p>}
+
+          {lastFeedback && (
+            <div
+              className={`rounded-lg border px-3 py-2 text-sm transition-all ${
+                lastFeedback.feedbackType === "excellent"
+                  ? "border-green-500 bg-green-50 text-green-900"
+                  : lastFeedback.feedbackType === "good"
+                    ? "border-blue-500 bg-blue-50 text-blue-900"
+                    : lastFeedback.feedbackType === "moderate"
+                      ? "border-yellow-500 bg-yellow-50 text-yellow-900"
+                      : "border-orange-500 bg-orange-50 text-orange-900"
+              }`}
+            >
+              <p className="font-medium">{lastFeedback.feedback}</p>
+              <button
+                onClick={() => setLastFeedback(null)}
+                className="text-xs mt-1 underline opacity-75 hover:opacity-100"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
         </CardContent>
       </Card>
 
+      {subscriptionStatus && (
+        <div className="flex justify-center">
+          <SubscriptionStatus subscriptionStatus={subscriptionStatus} onUpgrade={handleUpgrade} />
+        </div>
+      )}
+
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Sets in Room</CardTitle>
+          <CardTitle className="text-lg">Sets in Session</CardTitle>
         </CardHeader>
         <CardContent>
-          {!roomId ? (
-            <p className="text-sm text-muted-foreground">No room yet.</p>
+          {!sessionId ? (
+            <p className="text-sm text-muted-foreground">No active session.</p>
           ) : sets === undefined ? (
             <p className="text-sm text-muted-foreground">Loading…</p>
           ) : !sets || sets.length === 0 ? (

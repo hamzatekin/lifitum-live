@@ -1,6 +1,7 @@
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
+import { AutumnProvider } from "autumn-js/react";
 
 import appCss from "../styles.css?url";
 import { QueryClient } from "@tanstack/react-query";
@@ -39,7 +40,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <AutumnProvider>{children}</AutumnProvider>
         <TanStackDevtools
           config={{
             position: "bottom-right",

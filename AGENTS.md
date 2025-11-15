@@ -1,0 +1,2 @@
+- use bun for package manager
+- make use of 'you might not need an effect' (https://react.dev/learn/you-might-not-need-an-effect) article for not writing unnecessary useEffect hooks

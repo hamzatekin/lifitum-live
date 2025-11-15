@@ -6,10 +6,10 @@ import { isBrowser } from "@/utils/ssr";
 type GlobalStore = {
   deviceId: string | null;
   userId: Id<"users"> | null;
-  roomId: Id<"rooms"> | null;
+  sessionId: Id<"sessions"> | null;
   isHydrated: boolean;
   setUserId: (id: Id<"users">) => void;
-  setRoomId: (id: Id<"rooms">) => void;
+  setSessionId: (id: Id<"sessions"> | null) => void;
   setDeviceId: (id: string) => void;
 };
 
@@ -53,18 +53,18 @@ export const useGlobalStore = create<GlobalStore>()(
     (set) => ({
       deviceId: null,
       userId: null,
-      roomId: null,
+      sessionId: null,
       isHydrated: false,
-      setUserId: (id) => set({ userId: id }),
-      setRoomId: (id) => set({ roomId: id }),
-      setDeviceId: (id) => set({ deviceId: id }),
+      setUserId: (id: Id<"users">) => set({ userId: id }),
+      setSessionId: (id: Id<"sessions"> | null) => set({ sessionId: id }),
+      setDeviceId: (id: string) => set({ deviceId: id }),
     }),
     {
       name: "liftium-storage",
       storage,
       partialize: (state) => ({
         deviceId: state.deviceId,
-        roomId: state.roomId,
+        sessionId: state.sessionId,
       }),
       onRehydrateStorage: () => (state) => {
         if (!state) return;
