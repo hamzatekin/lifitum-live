@@ -27,11 +27,31 @@ if (!process.env.VITE_CONVEX_URL) {
 const convex = new ConvexHttpClient(process.env.VITE_CONVEX_URL!);
 
 const sfrStudyLinks = [
-  "https://pmc.ncbi.nlm.nih.gov/articles/PMC8126497/",
-  "https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2022.949021/full",
-  "https://sportsmedicine-open.springeropen.com/articles/10.1186/s40798-023-00554-y",
-  "https://pubmed.ncbi.nlm.nih.gov/27038416/",
-  "https://www.mdpi.com/2411-5142/9/4/186",
+  {
+    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC8126497/",
+    topics: ["fatigue management", "recovery", "costly", "excessive fatigue"],
+    title: "Stimulus-Fatigue Recovery framework",
+  },
+  {
+    url: "https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2022.949021/full",
+    topics: ["optimal", "efficient", "stimulus-fatigue ratio", "great", "good"],
+    title: "S/F ratio optimization",
+  },
+  {
+    url: "https://sportsmedicine-open.springeropen.com/articles/10.1186/s40798-023-00554-y",
+    topics: ["effective", "stimulus", "fatigue management", "good", "great"],
+    title: "Fatigue management in resistance training",
+  },
+  {
+    url: "https://pubmed.ncbi.nlm.nih.gov/27038416/",
+    topics: ["recovery", "fatigue", "costly", "overtraining"],
+    title: "Recovery dynamics and training adaptation",
+  },
+  {
+    url: "https://www.mdpi.com/2411-5142/9/4/186",
+    topics: ["stimulus quantification", "meh", "suboptimal", "ignored", "warm-up"],
+    title: "Effective stimulus quantification",
+  },
 ];
 
 async function scrapeWebsite(url: string) {
@@ -72,10 +92,10 @@ function chunkText(text: string, maxTokens = 500) {
 async function run() {
   console.log("Starting SFR embedding seed...");
 
-  for (const url of sfrStudyLinks) {
-    console.log("Scraping:", url);
+  for (const study of sfrStudyLinks) {
+    console.log("Scraping:", study.url);
 
-    const { markdown, metadata } = await scrapeWebsite(url);
+    const { markdown, metadata } = await scrapeWebsite(study.url);
     const chunks = chunkText(markdown);
 
     console.log(` → ${chunks.length} chunks`);
@@ -86,12 +106,16 @@ async function run() {
       await convex.mutation(api.sfrEmbeddings.insert, {
         text: chunk,
         vector: embedding,
-        url,
-        metadata,
+        url: study.url,
+        metadata: {
+          ...metadata,
+          topics: study.topics,
+          title: study.title,
+        },
       });
     }
 
-    console.log("Done:", url);
+    console.log("Done:", study.url);
   }
 
   console.log("🎉 Finished seeding SFR embeddings!");

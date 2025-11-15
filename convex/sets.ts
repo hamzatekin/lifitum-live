@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { api } from "./_generated/api";
 import { calculateStimulusToFatigueRatio, generateSFRFeedback } from "./algorithms";
 
 export const logSet = mutation({
@@ -13,19 +14,25 @@ export const logSet = mutation({
     stimulusToFatigueRatio: v.optional(v.number()),
     feedback: v.optional(v.string()),
     feedbackType: v.optional(v.string()),
+    attribution: v.optional(v.any()),
   },
   handler: async (ctx, args) => {
-    const stimulusToFatigueRatio =
-      args.stimulusToFatigueRatio ??
-      calculateStimulusToFatigueRatio(args.load, args.reps, args.rir);
+    const sfrResult = calculateStimulusToFatigueRatio(args.load, args.reps, args.rir);
+    const stimulusToFatigueRatio = args.stimulusToFatigueRatio ?? sfrResult.ratio;
 
-    const feedbackData = generateSFRFeedback(stimulusToFatigueRatio);
+    const relevantStudies = await ctx.runQuery(api.sfrEmbeddings.getStudiesByVerdict, {
+      verdict: sfrResult.verdict,
+      limit: 3,
+    });
+
+    const feedbackData = generateSFRFeedback(sfrResult, relevantStudies);
 
     return await ctx.db.insert("sets", {
       ...args,
       stimulusToFatigueRatio,
       feedback: args.feedback ?? feedbackData.feedback,
       feedbackType: args.feedbackType ?? feedbackData.feedbackType,
+      attribution: feedbackData.attribution,
       createdAt: Date.now(),
     });
   },

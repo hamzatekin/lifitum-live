@@ -2,10 +2,10 @@ import { createRouter } from "@tanstack/react-router";
 import { MutationCache, QueryClient, notifyManager } from "@tanstack/react-query";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import { ConvexQueryClient } from "@convex-dev/react-query";
-import { ConvexProvider } from "convex/react";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { routeTree } from "./routeTree.gen";
-import { DefaultCatchBoundary } from "./components/DefaultCatchBoundary";
-import { NotFound } from "./components/NotFound";
+import { DefaultCatchBoundary } from "./components/default-catch-boundary";
+import { NotFound } from "./components/not-found";
 
 export function getRouter() {
   if (typeof document !== "undefined") {
@@ -16,14 +16,11 @@ export function getRouter() {
   if (!CONVEX_URL) {
     console.error("missing envar CONVEX_URL");
   }
-  const convexQueryClient = new ConvexQueryClient(CONVEX_URL);
+  const convexQueryClient = new ConvexReactClient(CONVEX_URL);
 
   const queryClient: QueryClient = new QueryClient({
     defaultOptions: {
-      queries: {
-        queryKeyHashFn: convexQueryClient.hashFn(),
-        queryFn: convexQueryClient.queryFn(),
-      },
+      queries: {},
     },
     mutationCache: new MutationCache({
       onError: () => {
@@ -31,7 +28,6 @@ export function getRouter() {
       },
     }),
   });
-  convexQueryClient.connect(queryClient);
 
   const router = createRouter({
     routeTree,
@@ -39,11 +35,12 @@ export function getRouter() {
     defaultErrorComponent: DefaultCatchBoundary,
     defaultNotFoundComponent: () => <NotFound />,
     context: { queryClient },
-    Wrap: ({ children }) => <ConvexProvider client={convexQueryClient.convexClient}>{children}</ConvexProvider>,
+    Wrap: ({ children }) => <ConvexProvider client={convexQueryClient}>{children}</ConvexProvider>,
     scrollRestoration: true,
   });
+
   setupRouterSsrQueryIntegration({
-    router,
+    router: router as any,
     queryClient,
   });
 

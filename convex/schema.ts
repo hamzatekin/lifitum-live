@@ -28,6 +28,7 @@ export default defineSchema({
     stimulusToFatigueRatio: v.optional(v.number()),
     feedback: v.optional(v.string()),
     feedbackType: v.optional(v.string()),
+    attribution: v.optional(v.any()),
     createdAt: v.number(),
   })
     .index("by_sessionId", ["sessionId"])

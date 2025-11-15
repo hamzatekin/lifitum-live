@@ -13,13 +13,13 @@ interface LogSetInput {
 interface SetFeedback {
   feedback: string;
   feedbackType: string;
+  attribution?: {
+    text: string;
+    urls: string[];
+    studies?: Array<{ text: string; url: string; metadata?: any }>;
+  };
 }
 
-/**
- * Hook that handles logging a set with feature access validation
- * Checks limits before allowing the user to log a set
- * Returns the handler function, loading state, and feedback from last logged set
- */
 export function useLogSetWithValidation(userId: Id<"users"> | null, sessionId: Id<"sessions"> | null) {
   const [logging, setLogging] = useState(false);
   const [lastFeedback, setLastFeedback] = useState<SetFeedback | null>(null);
@@ -30,7 +30,6 @@ export function useLogSetWithValidation(userId: Id<"users"> | null, sessionId: I
   const onLogSet = async (setData: LogSetInput) => {
     if (!sessionId || !userId) return;
 
-    // Check if user can log more sets
     const accessCheck = await checkFeatureAccess({ userId, feature: "basic_tracking" });
     const maxSets = accessCheck?.limits?.maxSets ?? 50;
     if (accessCheck?.usage?.setsLogged && accessCheck?.usage?.setsLogged >= maxSets) {
@@ -49,15 +48,14 @@ export function useLogSetWithValidation(userId: Id<"users"> | null, sessionId: I
         rir: Number(setData.rir),
       });
 
-      // Extract feedback from the result
       if (result && "feedback" in result && "feedbackType" in result) {
         setLastFeedback({
           feedback: (result as any).feedback,
           feedbackType: (result as any).feedbackType,
+          attribution: (result as any).attribution,
         });
       }
 
-      // Track usage
       await trackUsage({ userId, action: "set_logged", amount: 1 });
     } finally {
       setLogging(false);
@@ -66,4 +64,3 @@ export function useLogSetWithValidation(userId: Id<"users"> | null, sessionId: I
 
   return { onLogSet, logging, lastFeedback, setLastFeedback };
 }
-

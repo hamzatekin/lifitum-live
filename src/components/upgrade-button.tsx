@@ -18,9 +18,9 @@ export function UpgradeButton({ currentTier, onUpgrade }: UpgradeButtonProps) {
         "Advanced analytics (30-day history)",
         "Workout templates",
         "Export data (CSV, PDF)",
-        "Unlimited collaboration members"
+        "Unlimited collaboration members",
       ],
-      tier: "pro"
+      tier: "pro",
     },
     {
       name: "Coach",
@@ -30,10 +30,10 @@ export function UpgradeButton({ currentTier, onUpgrade }: UpgradeButtonProps) {
         "Client management system",
         "Custom program creation",
         "Progress reports",
-        "Video exercise library"
+        "Video exercise library",
       ],
-      tier: "coach"
-    }
+      tier: "coach",
+    },
   ];
 
   return (
@@ -53,9 +53,7 @@ export function UpgradeButton({ currentTier, onUpgrade }: UpgradeButtonProps) {
                 <Card key={plan.tier} className="border-2 border-primary/20">
                   <CardHeader>
                     <CardTitle className="text-center">{plan.name}</CardTitle>
-                    <p className="text-2xl font-bold text-center text-primary">
-                      {plan.price}
-                    </p>
+                    <p className="text-2xl font-bold text-center text-primary">{plan.price}</p>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2 text-sm">
@@ -66,10 +64,7 @@ export function UpgradeButton({ currentTier, onUpgrade }: UpgradeButtonProps) {
                         </li>
                       ))}
                     </ul>
-                    <Button
-                      className="w-full mt-4"
-                      onClick={() => onUpgrade(plan.tier)}
-                    >
+                    <Button className="w-full mt-4" onClick={() => onUpgrade(plan.tier)}>
                       Upgrade to {plan.name}
                     </Button>
                   </CardContent>
@@ -86,9 +81,7 @@ export function UpgradeButton({ currentTier, onUpgrade }: UpgradeButtonProps) {
             <CardTitle className="text-lg">Upgrade to Coach</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-primary text-center mb-4">
-              $19.99/month
-            </p>
+            <p className="text-2xl font-bold text-primary text-center mb-4">$19.99/month</p>
             <ul className="space-y-2 text-sm mb-4">
               {plans[1].features.map((feature, index) => (
                 <li key={index} className="flex items-center">
@@ -97,10 +90,7 @@ export function UpgradeButton({ currentTier, onUpgrade }: UpgradeButtonProps) {
                 </li>
               ))}
             </ul>
-            <Button
-              className="w-full"
-              onClick={() => onUpgrade("coach")}
-            >
+            <Button className="w-full" onClick={() => onUpgrade("coach")}>
               Upgrade to Coach
             </Button>
           </CardContent>
