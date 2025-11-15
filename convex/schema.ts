@@ -38,4 +38,11 @@ export default defineSchema({
     text: v.string(),
     lastFetched: v.number(),
   }).index("by_topic", ["topic"]),
+
+  sfrEmbeddings: defineTable({
+    text: v.string(),
+    vector: v.array(v.number()),
+    url: v.string(),
+    metadata: v.optional(v.any()),
+  }).vectorIndex("vector", { vectorField: "vector", dimensions: 1536 }),
 });
