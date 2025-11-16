@@ -11,6 +11,17 @@ Try Liftium Live now:
 - **[https://liftium-live.hmztkn.workers.dev/](https://liftium-live.hmztkn.workers.dev/)**
 - **[https://liftiumlive.hamzatekin.dev/](https://liftiumlive.hamzatekin.dev/)**
 
+Built entirely with the TanStack Start Hackathon co-hosts and sponsors:
+
+- **[TanStack Start](https://tanstack.com/start)** - SSR app shell and routing.
+- **[Convex](https://www.convex.dev/)** - DB + optimistic updates for workouts and sessions.
+- **[Cloudflare](https://www.cloudflare.com/)** - Primary runtime & deployment, using `cloudflare:workers` env bindings.
+- **[Netlify](https://www.netlify.com/)** - Configured via the Netlify TanStack Start SDK and Vite plugin, with a dedicated `deploy:netlify` script so the app can also be built/deployed on Netlify.
+- **[Autumn](https://useautumn.com/)** - Models Free/Pro-style memberships and session limits.
+- **[CodeRabbit](https://www.coderabbit.ai/)** - Used for AI-assisted PR review during development.
+- **[Firecrawl](https://www.firecrawl.dev/)** - Scrapes PubMed hypertrophy studies for embeddings.
+- **[Sentry](https://sentry.io/)** - Error monitoring and performance tracking
+
 ## 🎯 The Problem
 
 Most workout trackers just log numbers. They don't tell you if your sets are actually effective for muscle growth, or if you're accumulating unnecessary fatigue. Liftium Live solves this by:
@@ -41,18 +52,6 @@ Most workout trackers just log numbers. They don't tell you if your sets are act
 - Session history with workout duration and performance metrics
 
 ## 🛠️ Tech Stack
-
-Built entirely with the TanStack Start Hackathon co-hosts and sponsors:
-
-- **[TanStack Start](https://tanstack.com/start)** - Full-stack React framework with SSR, streaming, and server functions
-- **[Convex](https://www.convex.dev/)** - Real-time reactive database with server-side functions
-- **[Autumn](https://useautumn.com/)** - Usage-based pricing and monetization
-- **[CodeRabbit](https://www.coderabbit.ai/)** - AI-powered code reviews
-- **[Firecrawl](https://www.firecrawl.dev/)** - Web scraping for research papers
-- **[Sentry](https://sentry.io/)** - Error monitoring and performance tracking
-- **[Cloudflare](https://www.cloudflare.com/)** - Hosting and edge deployment
-- **[Shadcn UI](https://ui.shadcn.com/)** - Component library and styling
-- **[Zustand](https://github.com/pmndrs/zustand)** - Client-side state management
 
 ## 🧮 How SFR Works
 
