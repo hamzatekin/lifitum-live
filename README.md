@@ -4,6 +4,13 @@
 
 **Liftium Live** is an evidence-based workout tracking app that analyzes your training in real-time using the Stimulus-to-Fatigue Ratio (SFR). Built for the [TanStack Start Hackathon](https://luma.com/tanstackstarthackathonv1), it combines cutting-edge full-stack web technologies with sports science research to help you train smarter, not harder.
 
+## 🚀 Live Demo
+
+Try Liftium Live now:
+
+- **[https://liftium-live.hmztkn.workers.dev/](https://liftium-live.hmztkn.workers.dev/)**
+- **[https://liftiumlive.hamzatekin.dev/](https://liftiumlive.hamzatekin.dev/)**
+
 ## 🎯 The Problem
 
 Most workout trackers just log numbers. They don't tell you if your sets are actually effective for muscle growth, or if you're accumulating unnecessary fatigue. Liftium Live solves this by:
@@ -43,9 +50,9 @@ Built entirely with the TanStack Start Hackathon co-hosts and sponsors:
 - **[CodeRabbit](https://www.coderabbit.ai/)** - AI-powered code reviews
 - **[Firecrawl](https://www.firecrawl.dev/)** - Web scraping for research papers
 - **[Sentry](https://sentry.io/)** - Error monitoring and performance tracking
-- **Cloudflare** - Hosting and edge deployment
-- **Shadcn UI** - Component library and styling
-- **Zustand** - Client-side state management
+- **[Cloudflare](https://www.cloudflare.com/)** - Hosting and edge deployment
+- **[Shadcn UI](https://ui.shadcn.com/)** - Component library and styling
+- **[Zustand](https://github.com/pmndrs/zustand)** - Client-side state management
 
 ## 🧮 How SFR Works
 
