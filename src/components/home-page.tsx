@@ -15,6 +15,7 @@ import { useRestoreActiveSession } from "@/hooks/useRestoreActiveSession";
 import { useStartWorkoutSession } from "@/hooks/useStartWorkoutSession";
 import { useIsPro } from "@/hooks/useIsPro";
 import { WelcomeScreen } from "@/components/welcome-screen";
+import * as Sentry from "@sentry/tanstackstart-react";
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -32,7 +33,6 @@ export function HomePage() {
   const setSessionId = useGlobalStore((s) => s.setSessionId);
 
   const sets = useQuery(api.sets.getSets, sessionId ? { sessionId: sessionId as any } : "skip");
-  const session = useQuery(api.sessions.getSession, sessionId ? { sessionId: sessionId as any } : "skip");
   const finishedSessions = useQuery(api.sessions.getFinishedSessions, userId ? { userId: userId as any } : "skip");
 
   useEnsureAnonymousUser(deviceId, userId, setUserId);
@@ -70,7 +70,14 @@ export function HomePage() {
               <>
                 <span className="text-muted-foreground">·</span>
                 <Button
-                  onClick={() => navigate({ to: "/pricing" })}
+                  onClick={() => {
+                    Sentry.captureMessage("Pricing page viewed", {
+                      level: "info",
+                      tags: { feature: "pricing", action: "navigate", source: "header" },
+                      extra: { userId },
+                    });
+                    navigate({ to: "/pricing" });
+                  }}
                   variant="link"
                   className="h-auto p-0 text-sm font-medium"
                 >
@@ -78,6 +85,28 @@ export function HomePage() {
                 </Button>
               </>
             )}
+          </div>
+
+          {/* Test Sentry Button */}
+          <div className="mt-4">
+            <Button
+              onClick={() => {
+                try {
+                  throw new Error("Test Sentry Error - This is a test error to verify Sentry integration");
+                } catch (error) {
+                  Sentry.captureException(error, {
+                    tags: { test: true, feature: "sentry-test" },
+                    extra: { userAction: "Test Sentry Button Clicked" },
+                  });
+                  console.error("Test error sent to Sentry:", error);
+                  alert("Test error sent to Sentry! Check your Sentry dashboard.");
+                }
+              }}
+              variant="outline"
+              size="sm"
+            >
+              🧪 Test Sentry
+            </Button>
           </div>
         </div>
 

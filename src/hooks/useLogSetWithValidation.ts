@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 import { Id } from "convex/_generated/dataModel";
+import * as Sentry from "@sentry/tanstackstart-react";
 
 interface LogSetInput {
   exercise: string;
@@ -46,6 +47,19 @@ export function useLogSetWithValidation(userId: Id<"users"> | null, sessionId: I
           attribution: (result as any).attribution,
         });
       }
+
+      // Track feature usage
+      Sentry.captureMessage("Set logged", {
+        level: "info",
+        tags: { feature: "log-set", action: "success", exercise: setData.exercise },
+        extra: { exercise: setData.exercise, load: setData.load, reps: setData.reps, rir: setData.rir, sessionId },
+      });
+    } catch (error) {
+      console.error("Error logging set:", error);
+      Sentry.captureException(error, {
+        tags: { feature: "log-set" },
+        extra: { setData, sessionId, userId },
+      });
     } finally {
       setLogging(false);
     }

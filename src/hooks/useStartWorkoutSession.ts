@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 import { Id } from "convex/_generated/dataModel";
+import * as Sentry from "@sentry/tanstackstart-react";
 
 /**
  * Hook that handles starting a new workout session
@@ -21,8 +22,19 @@ export function useStartWorkoutSession(
     try {
       const sessionId = await createSession({ userId: userId as any });
       setSessionId(sessionId as any);
+
+      // Track feature usage
+      Sentry.captureMessage("Workout session started", {
+        level: "info",
+        tags: { feature: "start-session", action: "success" },
+        extra: { userId, sessionId },
+      });
     } catch (error) {
       console.error("Failed to start session:", error);
+      Sentry.captureException(error, {
+        tags: { feature: "start-session" },
+        extra: { userId },
+      });
     } finally {
       setStarting(false);
     }

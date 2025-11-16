@@ -18,6 +18,8 @@
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
+    "@sentry/react": "^10.25.0",
+    "@sentry/tanstackstart-react": "^10.25.0",
     "@tailwindcss/postcss": "^4.1.16",
     "@tailwindcss/vite": "^4.0.6",
     "@tanstack/nitro-v2-vite-plugin": "^1.132.31",

@@ -4,9 +4,13 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { AutumnProvider } from "autumn-js/react";
 import { useGlobalStore } from "@/store/global.store";
+import * as Sentry from "@sentry/tanstackstart-react";
+import { initSentry } from "@/lib/sentry";
 
 import appCss from "../styles.css?url";
 import { QueryClient } from "@tanstack/react-query";
+
+initSentry();
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -42,7 +46,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <AutumnWrapper>{children}</AutumnWrapper>
+        <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
+          <AutumnWrapper>{children}</AutumnWrapper>
+        </Sentry.ErrorBoundary>
         <TanStackDevtools
           config={{
             position: "bottom-right",
@@ -57,6 +63,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
+  );
+}
+
+function ErrorFallback() {
+  return (
+    <div style={{ padding: "2rem", textAlign: "center" }}>
+      <h1>Oops! Something went wrong</h1>
+      <p>We've been notified and are working on it.</p>
+      <button onClick={() => window.location.reload()}>Reload page</button>
+    </div>
   );
 }
 
