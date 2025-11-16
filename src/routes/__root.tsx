@@ -22,16 +22,84 @@ export const Route = createRootRouteWithContext<{
       },
       {
         name: "viewport",
-        content: "width=device-width, initial-scale=1",
+        content: "width=device-width, initial-scale=1, maximum-scale=5",
       },
       {
-        title: "Liftium Live",
+        title: "Liftium Live - AI-Powered Workout Tracking",
+      },
+      {
+        name: "description",
+        content: "Track your workouts with AI-powered insights. Get personalized recommendations and achieve your fitness goals faster.",
+      },
+      {
+        name: "theme-color",
+        content: "#000000",
+      },
+      // Open Graph / Facebook
+      {
+        property: "og:type",
+        content: "website",
+      },
+      {
+        property: "og:title",
+        content: "Liftium Live - AI-Powered Workout Tracking",
+      },
+      {
+        property: "og:description",
+        content: "Track your workouts with AI-powered insights. Get personalized recommendations and achieve your fitness goals faster.",
+      },
+      {
+        property: "og:image",
+        content: "/logo512.png",
+      },
+      // Twitter
+      {
+        name: "twitter:card",
+        content: "summary_large_image",
+      },
+      {
+        name: "twitter:title",
+        content: "Liftium Live - AI-Powered Workout Tracking",
+      },
+      {
+        name: "twitter:description",
+        content: "Track your workouts with AI-powered insights. Get personalized recommendations and achieve your fitness goals faster.",
+      },
+      {
+        name: "twitter:image",
+        content: "/logo512.png",
+      },
+      // Mobile
+      {
+        name: "apple-mobile-web-app-capable",
+        content: "yes",
+      },
+      {
+        name: "apple-mobile-web-app-status-bar-style",
+        content: "black-translucent",
+      },
+      {
+        name: "apple-mobile-web-app-title",
+        content: "Liftium",
       },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      {
+        rel: "icon",
+        type: "image/x-icon",
+        href: "/favicon.ico",
+      },
+      {
+        rel: "apple-touch-icon",
+        href: "/logo192.png",
+      },
+      {
+        rel: "manifest",
+        href: "/manifest.json",
       },
     ],
   }),
@@ -40,26 +108,30 @@ export const Route = createRootRouteWithContext<{
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const isDevelopment = import.meta.env.DEV;
+
   return (
     <html lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
-        <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
+        <Sentry.ErrorBoundary fallback={<ErrorFallback />} showDialog>
           <AutumnWrapper>{children}</AutumnWrapper>
         </Sentry.ErrorBoundary>
-        <TanStackDevtools
-          config={{
-            position: "bottom-right",
-          }}
-          plugins={[
-            {
-              name: "Tanstack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
+        {isDevelopment && (
+          <TanStackDevtools
+            config={{
+              position: "bottom-right",
+            }}
+            plugins={[
+              {
+                name: "Tanstack Router",
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+            ]}
+          />
+        )}
         <Scripts />
       </body>
     </html>

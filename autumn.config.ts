@@ -1,4 +1,4 @@
-import { feature, product, featureItem, pricedFeatureItem, priceItem } from "atmn";
+import { feature, product, featureItem, priceItem } from "atmn";
 
 // Features
 export const evidenceBasedVolumeTrackingPerMuscleGroup = feature({

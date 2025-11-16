@@ -211,7 +211,7 @@ export const calculateSFR = query({
     reps: v.number(),
     rir: v.number(),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     return calculateStimulusToFatigueRatio(args.load, args.reps, args.rir);
   },
 });

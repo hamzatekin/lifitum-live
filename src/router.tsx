@@ -1,7 +1,6 @@
 import { createRouter } from "@tanstack/react-router";
 import { MutationCache, QueryClient, notifyManager } from "@tanstack/react-query";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
-import { ConvexQueryClient } from "@convex-dev/react-query";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { routeTree } from "./routeTree.gen";
 import { DefaultCatchBoundary } from "./components/default-catch-boundary";

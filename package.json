@@ -6,9 +6,14 @@
   "scripts": {
     "dev": "vite dev --port 3000",
     "build": "vite build",
-    "serve": "vite preview",
+    "start": "NODE_ENV=production vite preview --port 3000 --host",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "tsc --noEmit",
     "test": "vitest run",
-    "convex:dev": "convex dev"
+    "test:watch": "vitest",
+    "convex:dev": "convex dev",
+    "deploy": "bun run type-check && bun run build"
   },
   "dependencies": {
     "@convex-dev/react-query": "0.0.0-alpha.11",
