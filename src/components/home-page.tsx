@@ -1,4 +1,6 @@
 import { useQuery } from "convex/react";
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useGlobalStore } from "@/store/global.store";
@@ -13,12 +15,21 @@ export function HomePage() {
   const userId = useGlobalStore((s) => s.userId);
   const sessionId = useGlobalStore((s) => s.sessionId);
   const setSessionId = useGlobalStore((s) => s.setSessionId);
+  const navigate = useNavigate();
 
   const finishedSessions = useQuery(api.sessions.getFinishedSessions, userId ? { userId: userId as any } : "skip");
 
   useRestoreActiveSession(userId, sessionId, setSessionId);
 
-  const { onStartSession, starting } = useStartWorkoutSession(userId, setSessionId);
+  const { onStartSession, starting, remainingRooms } = useStartWorkoutSession(userId, setSessionId);
+
+  const hasNoRoomsLeft = remainingRooms !== null && remainingRooms === 0;
+
+  useEffect(() => {
+    if (hasNoRoomsLeft) {
+      navigate({ to: "/pricing", search: { reason: "limit_reached" } });
+    }
+  }, [hasNoRoomsLeft, navigate]);
 
   return (
     <>
@@ -26,8 +37,8 @@ export function HomePage() {
       {!sessionId && finishedSessions !== undefined && finishedSessions.length === 0 && <WelcomeScreen />}
 
       {!sessionId && (
-        <Button onClick={onStartSession} disabled={!userId || starting} size="lg" className="w-full">
-          {starting ? "Starting Session..." : "Start Workout Session"}
+        <Button onClick={onStartSession} disabled={!userId || starting || hasNoRoomsLeft} size="lg" className="w-full">
+          {starting ? "Starting Session..." : hasNoRoomsLeft ? "Upgrade Required" : "Start Workout Session"}
         </Button>
       )}
 
