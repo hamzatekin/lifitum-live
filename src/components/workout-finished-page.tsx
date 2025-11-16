@@ -69,7 +69,6 @@ export function WorkoutFinishedPage() {
     );
   }
 
-  // Group sets by exercise
   const exerciseGroups = sets.reduce((acc: any, set: any) => {
     if (!acc[set.exercise]) {
       acc[set.exercise] = [];
@@ -77,7 +76,6 @@ export function WorkoutFinishedPage() {
     acc[set.exercise].push(set);
     return acc;
   }, {});
-  console.log("🚀 ~ WorkoutFinishedPage ~ exerciseGroups:", exerciseGroups);
 
   const duration =
     session.endedAt && session.startedAt ? Math.round((session.endedAt - session.startedAt) / 1000 / 60) : 0;
