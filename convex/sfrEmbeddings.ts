@@ -44,7 +44,7 @@ export const getStudiesByVerdict = query({
     for (const url of targetUrls) {
       const studies = await ctx.db
         .query("sfrEmbeddings")
-        .filter((q) => q.eq(q.field("url"), url))
+        .withIndex("by_url", (q) => q.eq("url", url))
         .take(1);
       relevantStudies.push(...studies);
 

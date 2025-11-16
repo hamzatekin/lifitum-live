@@ -3,22 +3,18 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
-import { nitroV2Plugin } from "@tanstack/nitro-v2-vite-plugin";
+import { cloudflare } from "@cloudflare/vite-plugin";
 
 const config = defineConfig({
   plugins: [
-    nitroV2Plugin(),
-    // this is the plugin that enables path aliases
     viteTsConfigPaths({
       projects: ["./tsconfig.json"],
     }),
+    cloudflare({ viteEnvironment: { name: "ssr" } }),
     tailwindcss(),
     tanstackStart(),
     viteReact(),
   ],
-  define: {
-    "process.env": JSON.stringify(process.env),
-  },
   build: {
     minify: "esbuild",
     target: "esnext",

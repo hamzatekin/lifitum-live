@@ -16,6 +16,7 @@ import { useStartWorkoutSession } from "@/hooks/useStartWorkoutSession";
 import { useIsPro } from "@/hooks/useIsPro";
 import { WelcomeScreen } from "@/components/welcome-screen";
 import * as Sentry from "@sentry/tanstackstart-react";
+import { Loader2 } from "lucide-react";
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -107,7 +108,7 @@ export function HomePage() {
             ) : finishedSessions.length === 0 ? (
               <p className="text-sm text-muted-foreground">No finished workouts yet. Start your first session!</p>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-2 max-h-96 overflow-y-auto">
                 {finishedSessions.map((workout: any) => {
                   const duration =
                     workout.endedAt && workout.startedAt
@@ -168,7 +169,10 @@ export function HomePage() {
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-green-600 font-medium">● Live</span>
                   <Button onClick={handleEndSession} disabled={ending} variant="destructive" size="sm">
-                    {ending ? "Finishing..." : "Finish Session"}
+                    <span className="flex items-center gap-2 text-white">
+                      {ending ? "Finishing..." : "Finish Session"}
+                      {ending && <Loader2 className="w-4 h-4 animate-spin" />}
+                    </span>
                   </Button>
                 </div>
               </div>

@@ -3,28 +3,29 @@ import Firecrawl from "@mendable/firecrawl-js";
 import OpenAI from "openai";
 import { ConvexHttpClient } from "convex/browser"; // or convex/node based on your setup
 import { api } from "convex/_generated/api";
+import { env } from "cloudflare:workers";
 
-if (!process.env.OPENAI_API_KEY) {
+if (!env.OPENAI_API_KEY) {
   throw new Error("OPENAI_API_KEY is not set");
 }
 
-if (!process.env.FIRECRAWL_API_KEY) {
+if (!env.FIRECRAWL_API_KEY) {
   throw new Error("FIRECRAWL_API_KEY is not set");
 }
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-});
-
-const firecrawl = new Firecrawl({
-  apiKey: process.env.FIRECRAWL_API_KEY!,
-});
-
-if (!process.env.VITE_CONVEX_URL) {
+if (!env.VITE_CONVEX_URL) {
   throw new Error("VITE_CONVEX_URL is not set");
 }
 
-const convex = new ConvexHttpClient(process.env.VITE_CONVEX_URL!);
+const openai = new OpenAI({
+  apiKey: env.OPENAI_API_KEY,
+});
+
+const firecrawl = new Firecrawl({
+  apiKey: env.FIRECRAWL_API_KEY,
+});
+
+const convex = new ConvexHttpClient(env.VITE_CONVEX_URL!);
 
 const sfrStudyLinks = [
   {

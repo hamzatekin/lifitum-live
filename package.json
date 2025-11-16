@@ -7,15 +7,18 @@
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "start": "NODE_ENV=production vite preview --port 3000 --host",
-    "preview": "vite preview",
+    "preview": "bun run build && vite preview",
     "type-check": "tsc --noEmit",
     "lint": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "convex:dev": "convex dev",
-    "deploy": "bun run type-check && bun run build"
+    "deploy": "bun run type-check && bun run build",
+    "wrangler:deploy": "bun run build && wrangler deploy",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
+    "@cloudflare/vite-plugin": "^1.14.2",
     "@convex-dev/react-query": "0.0.0-alpha.11",
     "@mendable/firecrawl-js": "^4.5.0",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -63,6 +66,7 @@
     "typescript": "^5.7.2",
     "vite": "^7.1.7",
     "vitest": "^3.0.5",
-    "web-vitals": "^5.1.0"
+    "web-vitals": "^5.1.0",
+    "wrangler": "^4.47.0"
   }
 }

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { autumnHandler } from "autumn-js/tanstack";
+import { env } from "cloudflare:workers";
 
 function getUserIdFromRequest(request: Request): string {
   const userId = request.headers.get("x-user-id");
@@ -9,8 +10,12 @@ function getUserIdFromRequest(request: Request): string {
   return userId;
 }
 
+if (!env.AUTUMN_SECRET_KEY) {
+  throw new Error("AUTUMN_SECRET_KEY is not set in cloudflare:workers");
+}
+
 export const autumnHandlerConfig = autumnHandler({
-  secretKey: process.env.AUTUMN_SECRET_KEY || "mock-secret-key-for-hackathon",
+  secretKey: env.AUTUMN_SECRET_KEY,
   identify: async ({ request }) => {
     const userId = getUserIdFromRequest(request);
 

@@ -45,5 +45,7 @@ export default defineSchema({
     vector: v.array(v.number()),
     url: v.string(),
     metadata: v.optional(v.any()),
-  }).vectorIndex("vector", { vectorField: "vector", dimensions: 1536 }),
+  })
+    .vectorIndex("vector", { vectorField: "vector", dimensions: 1536 })
+    .index("by_url", ["url"]),
 });

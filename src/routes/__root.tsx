@@ -29,7 +29,8 @@ export const Route = createRootRouteWithContext<{
       },
       {
         name: "description",
-        content: "Track your workouts with AI-powered insights. Get personalized recommendations and achieve your fitness goals faster.",
+        content:
+          "Track your workouts with AI-powered insights. Get personalized recommendations and achieve your fitness goals faster.",
       },
       {
         name: "theme-color",
@@ -46,7 +47,8 @@ export const Route = createRootRouteWithContext<{
       },
       {
         property: "og:description",
-        content: "Track your workouts with AI-powered insights. Get personalized recommendations and achieve your fitness goals faster.",
+        content:
+          "Track your workouts with AI-powered insights. Get personalized recommendations and achieve your fitness goals faster.",
       },
       {
         property: "og:image",
@@ -63,7 +65,8 @@ export const Route = createRootRouteWithContext<{
       },
       {
         name: "twitter:description",
-        content: "Track your workouts with AI-powered insights. Get personalized recommendations and achieve your fitness goals faster.",
+        content:
+          "Track your workouts with AI-powered insights. Get personalized recommendations and achieve your fitness goals faster.",
       },
       {
         name: "twitter:image",
