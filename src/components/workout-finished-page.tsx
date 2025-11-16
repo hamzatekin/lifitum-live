@@ -89,13 +89,13 @@ export function WorkoutFinishedPage() {
       <div className="mx-auto w-full max-w-2xl p-4 space-y-6 pb-8">
         {/* Header */}
         {shouldCelebrate ? (
-          <div className="text-center space-y-2 pt-8 pb-4">
+          <div className="text-center space-y-2 pb-4">
             <div className="text-6xl mb-4">🎉</div>
             <h1 className="text-3xl font-bold">Workout Complete!</h1>
             <p className="text-muted-foreground">Great work on your session</p>
           </div>
         ) : (
-          <div className="pt-6 pb-2">
+          <div className=" pb-2">
             <h1 className="text-2xl font-bold">Workout Details</h1>
           </div>
         )}

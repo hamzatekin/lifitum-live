@@ -13,20 +13,28 @@ export function Header({ className = "" }: HeaderProps) {
   const isPro = useIsPro();
   const userId = useGlobalStore((s) => s.userId);
 
+  const handleNavigateHome = () => {
+    navigate({ to: "/" });
+  };
+
   return (
     <header className={`pt-6 ${className}`}>
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
+        <button
+          onClick={handleNavigateHome}
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer rounded-lg p-1"
+          aria-label="Navigate to home"
+        >
           <div className="w-10 h-10 rounded-xl bg-linear-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg">
             <svg className="w-6 h-6 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <div>
+          <div className="text-left">
             <h1 className="text-3xl font-bold tracking-tight">Liftium Live</h1>
             <p className="text-sm text-muted-foreground mt-0.5">AI-Powered Workout Tracking</p>
           </div>
-        </div>
+        </button>
 
         <div className="flex items-center gap-3">
           <div className="text-right">
