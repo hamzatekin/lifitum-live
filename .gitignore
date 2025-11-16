@@ -12,3 +12,5 @@ count.txt
 .vinxi
 todos.json
 .claude
+wrangler.toml
+wrangler.jsonc
