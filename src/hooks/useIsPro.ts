@@ -1,9 +1,15 @@
 import { useCustomer } from "autumn-js/react";
 
-export function useIsPro(): boolean {
+export function useIsPro(): { isPro: boolean; isLoading: boolean } {
   const { customer } = useCustomer();
 
-  return (
-    customer?.products?.some((product: any) => product.product_id === "pro" && product.status === "active") ?? false
-  );
+  const isLoading = customer === undefined;
+
+  const isPro =
+    customer?.products?.some((product: any) => product.product_id === "pro" && product.status === "active") ?? false;
+
+  return {
+    isPro,
+    isLoading,
+  };
 }

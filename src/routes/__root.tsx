@@ -10,6 +10,7 @@ import { initSentry } from "@/lib/sentry";
 import appCss from "../styles.css?url";
 import { QueryClient } from "@tanstack/react-query";
 import { Header } from "@/components/header";
+import { useEnsureAnonymousUser } from "@/hooks/useEnsureAnonymousUser";
 
 initSentry();
 
@@ -206,5 +207,14 @@ function AutumnWrapper({ children }: { children: React.ReactNode }) {
     };
   }, [userId]);
 
-  return <AutumnProvider>{children}</AutumnProvider>;
+  return (
+    <AutumnProvider>
+      <EnsureUserWrapper>{children}</EnsureUserWrapper>
+    </AutumnProvider>
+  );
+}
+
+function EnsureUserWrapper({ children }: { children: React.ReactNode }) {
+  useEnsureAnonymousUser();
+  return <>{children}</>;
 }

@@ -11,20 +11,20 @@ import { ActiveSessionExerciseForm } from "@/components/active-session-exercise-
 import { ActiveSessionSet } from "@/components/active-session-set";
 
 export function ActiveSession() {
-  const deviceId = useGlobalStore((s) => s.deviceId);
   const userId = useGlobalStore((s) => s.userId);
   const sessionId = useGlobalStore((s) => s.sessionId);
-  const setUserId = useGlobalStore((s) => s.setUserId);
   const setSessionId = useGlobalStore((s) => s.setSessionId);
 
   const sets = useQuery(api.sets.getSets, sessionId ? { sessionId: sessionId as any } : "skip");
 
-  useEnsureAnonymousUser(deviceId, userId, setUserId);
   useRestoreActiveSession(userId, sessionId, setSessionId);
 
   const { onEndSession, ending } = useEndWorkoutSession(userId);
 
   const handleEndSession = async () => {
+    if (sets?.length === 0) {
+      return;
+    }
     if (!sessionId) return;
     await onEndSession(sessionId);
     setSessionId(null as any);
@@ -37,7 +37,7 @@ export function ActiveSession() {
           <CardTitle className="text-lg">Active Session</CardTitle>
           <div className="flex items-center gap-2">
             <span className="text-xs text-green-600 font-medium">● Live</span>
-            <Button onClick={handleEndSession} disabled={ending} variant="destructive" size="sm">
+            <Button onClick={handleEndSession} disabled={ending || sets?.length === 0} variant="destructive" size="sm">
               <span className="flex items-center gap-2 text-white">
                 {ending ? "Finishing..." : "Finish Session"}
                 {ending && <Loader2 className="w-4 h-4 animate-spin" />}

@@ -1,19 +1,30 @@
 import { feature, product, featureItem, priceItem } from "atmn";
 
 // Features
-export const evidenceBasedVolumeTrackingPerMuscleGroup = feature({
-  id: "evidence_based_volume_tracking_per_muscle_group",
-  name: "Evidence based volume tracking per muscle group",
+export const volumeTrackingPerMuscleGroup = feature({
+  id: "volume_tracking_per_muscle_group",
+  name: "Volume tracking per muscle group",
   type: "boolean",
 });
 
-export const unlimitedRoomCreation = feature({
-  id: "unlimited_room_creation",
-  name: "Unlimited room creation",
+export const roomCreation = feature({
+  id: "room_creation",
+  name: "Room creation",
   type: "continuous_use",
 });
 
 // Products
+export const free = product({
+  id: "free",
+  name: "Free",
+  items: [
+    featureItem({
+      feature_id: roomCreation.id,
+      included_usage: 100,
+    }),
+  ],
+});
+
 export const pro = product({
   id: "pro",
   name: "Pro",
@@ -24,14 +35,14 @@ export const pro = product({
     }),
 
     featureItem({
-      feature_id: evidenceBasedVolumeTrackingPerMuscleGroup.id,
-      included_usage: undefined,
+      feature_id: roomCreation.id,
+      included_usage: "inf",
+      reset_usage_when_enabled: true,
     }),
 
     featureItem({
-      feature_id: unlimitedRoomCreation.id,
-      included_usage: "inf",
-      reset_usage_when_enabled: true,
+      feature_id: volumeTrackingPerMuscleGroup.id,
+      included_usage: undefined,
     }),
   ],
 });

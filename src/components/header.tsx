@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useGlobalStore } from "@/store/global.store";
 import { useIsPro } from "@/hooks/useIsPro";
 import * as Sentry from "@sentry/tanstackstart-react";
+import { useCustomer } from "autumn-js/react";
 
 interface HeaderProps {
   className?: string;
@@ -10,8 +11,15 @@ interface HeaderProps {
 
 export function Header({ className = "" }: HeaderProps) {
   const navigate = useNavigate();
-  const isPro = useIsPro();
+  const { isPro, isLoading } = useIsPro();
   const userId = useGlobalStore((s) => s.userId);
+  const { check } = useCustomer();
+  const {
+    data: { balance },
+  } = check({
+    featureId: "room_creation",
+    requiredBalance: 1,
+  });
 
   const handleNavigateHome = () => {
     navigate({ to: "/" });
@@ -46,16 +54,21 @@ export function Header({ className = "" }: HeaderProps) {
                     : "bg-muted text-muted-foreground"
                 }`}
               >
-                {isPro ? (
+                {isLoading ? (
+                  <span className="flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-pulse"></span>
+                    Loading...
+                  </span>
+                ) : isPro ? (
                   <span className="flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>✨ Pro Member
                   </span>
                 ) : (
-                  "Free Plan"
+                  `Free Plan (${balance ?? ''} sessions remaining)`
                 )}
               </div>
             </div>
-            {!isPro && (
+            {!isPro && !isLoading && (
               <Button
                 onClick={() => {
                   Sentry.captureMessage("Pricing page viewed", {

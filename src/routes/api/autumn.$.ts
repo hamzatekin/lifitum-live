@@ -25,6 +25,7 @@ export const autumnHandlerConfig = autumnHandler({
         name: "Liftium User",
         email: "user@liftium.app",
       },
+      products: [{ id: "free", status: "active" }],
     };
   },
 });
