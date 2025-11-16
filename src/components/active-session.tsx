@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useEndWorkoutSession } from "@/hooks/useEndWorkoutSession";
-import { useEnsureAnonymousUser } from "@/hooks/useEnsureAnonymousUser";
 import { useRestoreActiveSession } from "@/hooks/useRestoreActiveSession";
 import { useGlobalStore } from "@/store/global.store";
 import { useQuery } from "convex/react";

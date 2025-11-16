@@ -64,7 +64,7 @@ export function Header({ className = "" }: HeaderProps) {
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>✨ Pro Member
                   </span>
                 ) : (
-                  `Free Plan (${balance ?? ''} sessions remaining)`
+                  `Free Plan (${balance ?? ""} sessions remaining)`
                 )}
               </div>
             </div>
@@ -76,7 +76,7 @@ export function Header({ className = "" }: HeaderProps) {
                     tags: { feature: "pricing", action: "navigate", source: "header" },
                     extra: { userId },
                   });
-                  navigate({ to: "/pricing" });
+                  navigate({ to: "/pricing", search: { reason: "" } });
                 }}
                 variant="outline"
                 size="sm"

@@ -14,6 +14,8 @@
     "test:watch": "vitest",
     "convex:dev": "convex dev",
     "deploy": "bun run type-check && bun run build",
+    "deploy:cloudflare": "bun run type-check && bun run build && wrangler deploy",
+    "deploy:netlify": "DEPLOYMENT_PLATFORM=netlify bun run type-check && bun run build && netlify deploy --prod",
     "wrangler:deploy": "bun run build && wrangler deploy",
     "cf-typegen": "wrangler types"
   },
