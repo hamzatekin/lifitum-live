@@ -21,14 +21,12 @@ export function useEndWorkoutSession(userId: Id<"users"> | null) {
     try {
       await endSession({ sessionId: sessionId as any });
 
-      // Track feature usage
       Sentry.captureMessage("Workout session ended", {
         level: "info",
         tags: { feature: "end-session", action: "success" },
         extra: { sessionId, userId },
       });
 
-      // Navigate to workout finished page with celebration flag
       navigate({
         to: "/workout-finished",
         search: { sessionId: sessionId as string, celebrate: "true" },

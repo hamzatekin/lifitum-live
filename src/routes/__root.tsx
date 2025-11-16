@@ -9,6 +9,7 @@ import { initSentry } from "@/lib/sentry";
 
 import appCss from "../styles.css?url";
 import { QueryClient } from "@tanstack/react-query";
+import { Header } from "@/components/header";
 
 initSentry();
 
@@ -136,7 +137,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <Sentry.ErrorBoundary fallback={<ErrorFallback />} showDialog>
-          <AutumnWrapper>{children}</AutumnWrapper>
+          <AutumnWrapper>
+            <div className="min-h-screen bg-background">
+              <div className="mx-auto w-full max-w-2xl p-4 space-y-6 pb-8">
+                <Header />
+                {children}
+              </div>
+            </div>
+          </AutumnWrapper>
         </Sentry.ErrorBoundary>
         {isDevelopment && (
           <TanStackDevtools
