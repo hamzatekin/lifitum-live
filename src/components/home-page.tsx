@@ -5,7 +5,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Header } from "@/components/header";
 import { useGlobalStore } from "@/store/global.store";
 import { api } from "convex/_generated/api";
 import { useState } from "react";
@@ -14,14 +13,11 @@ import { useEnsureAnonymousUser } from "@/hooks/useEnsureAnonymousUser";
 import { useLogSetWithValidation } from "@/hooks/useLogSetWithValidation";
 import { useRestoreActiveSession } from "@/hooks/useRestoreActiveSession";
 import { useStartWorkoutSession } from "@/hooks/useStartWorkoutSession";
-import { useIsPro } from "@/hooks/useIsPro";
 import { WelcomeScreen } from "@/components/welcome-screen";
-import * as Sentry from "@sentry/tanstackstart-react";
 import { Loader2 } from "lucide-react";
 
 export function HomePage() {
   const navigate = useNavigate();
-  const isPro = useIsPro();
 
   const [exercise, setExercise] = useState("Bench Press");
   const [load, setLoad] = useState<number>(60);
