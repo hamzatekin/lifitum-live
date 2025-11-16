@@ -1,11 +1,11 @@
 {
   "name": "liftium-live",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3000",
-    "build": "vite build",
+    "build": "NODE_ENV=production vite build",
     "start": "NODE_ENV=production vite preview --port 3000 --host",
     "preview": "bun run build && vite preview",
     "type-check": "tsc --noEmit",

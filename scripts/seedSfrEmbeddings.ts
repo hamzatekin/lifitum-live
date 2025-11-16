@@ -13,7 +13,7 @@ if (!env.FIRECRAWL_API_KEY) {
   throw new Error("FIRECRAWL_API_KEY is not set");
 }
 
-if (!env.VITE_CONVEX_URL) {
+if (!import.meta.env.VITE_CONVEX_URL) {
   throw new Error("VITE_CONVEX_URL is not set");
 }
 
