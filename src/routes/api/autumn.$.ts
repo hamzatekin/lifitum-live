@@ -10,16 +10,15 @@ function getUserIdFromRequest(request: Request): string {
 }
 
 export const autumnHandlerConfig = autumnHandler({
-  secretKey: process.env.AUTUMN_SECRET_KEY,
+  secretKey: process.env.AUTUMN_SECRET_KEY || "mock-secret-key-for-hackathon",
   identify: async ({ request }) => {
-    // get the user from your auth provider (example: better-auth)
     const userId = getUserIdFromRequest(request);
 
     return {
       customerId: userId,
       customerData: {
-        name: "john doe",
-        email: "john.doe@example.com",
+        name: "Liftium User",
+        email: "user@liftium.app",
       },
     };
   },

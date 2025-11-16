@@ -1,4 +1,5 @@
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
+import { useNavigate } from "@tanstack/react-router";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,15 +9,17 @@ import { Separator } from "@/components/ui/separator";
 import { useGlobalStore } from "@/store/global.store";
 import { api } from "convex/_generated/api";
 import { useState } from "react";
-import {
-  useEnsureAnonymousUser,
-  useRestoreActiveSession,
-  useStartWorkoutSession,
-  useEndWorkoutSession,
-  useLogSetWithValidation,
-} from "@/hooks";
+import { useEndWorkoutSession } from "@/hooks/useEndWorkoutSession";
+import { useEnsureAnonymousUser } from "@/hooks/useEnsureAnonymousUser";
+import { useLogSetWithValidation } from "@/hooks/useLogSetWithValidation";
+import { useRestoreActiveSession } from "@/hooks/useRestoreActiveSession";
+import { useStartWorkoutSession } from "@/hooks/useStartWorkoutSession";
+import { useIsPro } from "@/hooks/useIsPro";
 
 export function HomePage() {
+  const navigate = useNavigate();
+  const isPro = useIsPro();
+
   const [exercise, setExercise] = useState("Bench Press");
   const [load, setLoad] = useState<number>(60);
   const [reps, setReps] = useState<number>(8);
@@ -33,6 +36,7 @@ export function HomePage() {
 
   useEnsureAnonymousUser(deviceId, userId, setUserId);
   useRestoreActiveSession(userId, sessionId, setSessionId);
+
   const { onStartSession, starting } = useStartWorkoutSession(userId, setSessionId);
   const { onEndSession, ending } = useEndWorkoutSession(userId);
   const { onLogSet: handleLogSet, logging, lastFeedback, setLastFeedback } = useLogSetWithValidation(userId, sessionId);
@@ -52,19 +56,31 @@ export function HomePage() {
       <div className="mx-auto w-full max-w-2xl p-4 space-y-6 pb-8">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">User & Workout Session</CardTitle>
+            <CardTitle className="text-lg">Membership Status</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="text-sm text-muted-foreground">
-              {userId ? (
-                <span className="break-all">
-                  <span className="font-medium text-foreground">User ID:</span> <code>{userId}</code>
-                </span>
-              ) : (
-                "Creating anonymous user…"
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Current Plan</p>
+                <p className="text-2xl font-bold">
+                  {isPro ? <span className="text-green-600">Pro 🌟</span> : <span className="text-gray-600">Free</span>}
+                </p>
+              </div>
+              {!isPro && (
+                <Button onClick={() => navigate({ to: "/pricing" })} size="lg">
+                  Upgrade to Pro
+                </Button>
               )}
             </div>
+            {isPro && <p className="text-sm text-muted-foreground">You have unlimited access to all features! 🎉</p>}
+          </CardContent>
+        </Card>
 
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Workout Session</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="flex flex-wrap items-end gap-3">
               <Button onClick={onStartSession} disabled={!userId || !!sessionId || starting} className="mt-6">
                 {sessionId ? "Session Active 🟢" : starting ? "Starting…" : "Start Session"}

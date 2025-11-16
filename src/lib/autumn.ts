@@ -1,9 +1,5 @@
 import { useGlobalStore } from "@/store/global.store";
 
-/**
- * Helper to get the current userId for Autumn API calls
- * This ensures the server can identify the anonymous user
- */
 export function getAutumnHeaders(): HeadersInit {
   const userId = useGlobalStore.getState().userId;
 
@@ -17,18 +13,6 @@ export function getAutumnHeaders(): HeadersInit {
   };
 }
 
-/**
- * Custom fetch wrapper for direct Autumn API calls (use hooks instead when possible)
- * Automatically includes the userId header
- *
- * Example:
- * ```tsx
- * const response = await autumnFetch('/check', {
- *   method: 'POST',
- *   body: JSON.stringify({ featureId: 'premium' })
- * })
- * ```
- */
 export async function autumnFetch(path: string, options?: RequestInit) {
   const headers = getAutumnHeaders();
 
