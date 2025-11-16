@@ -5,19 +5,46 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { api } from "convex/_generated/api";
 import { Id } from "convex/_generated/dataModel";
+import { useState } from "react";
+
+function ExpandableUrls({ urls }: { urls: string[] }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const visibleCount = 2;
+  const hasMore = urls.length > visibleCount;
+
+  return (
+    <div className="flex flex-wrap gap-1 mt-1">
+      {urls.slice(0, isExpanded ? urls.length : visibleCount).map((url: string, urlIndex: number) => (
+        <Button
+          key={urlIndex}
+          size="sm"
+          variant="outline"
+          onClick={() => window.open(url, "_blank", "noopener,noreferrer")}
+          className="text-xs px-2 py-0 h-auto"
+        >
+          🔗 Study {urlIndex + 1}
+        </Button>
+      ))}
+      {hasMore && (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-xs px-2 py-0 h-auto text-muted-foreground hover:text-foreground"
+        >
+          {isExpanded ? "Show less" : "..."}
+        </Button>
+      )}
+    </div>
+  );
+}
 
 export function WorkoutFinishedPage() {
   const navigate = useNavigate();
   const { sessionId, celebrate } = useSearch({ from: "/workout-finished" });
 
-  const sets = useQuery(
-    api.sets.getSets,
-    sessionId ? { sessionId: sessionId as Id<"sessions"> } : "skip"
-  );
-  const session = useQuery(
-    api.sessions.getSession,
-    sessionId ? { sessionId: sessionId as Id<"sessions"> } : "skip"
-  );
+  const sets = useQuery(api.sets.getSets, sessionId ? { sessionId: sessionId as Id<"sessions"> } : "skip");
+  const session = useQuery(api.sessions.getSession, sessionId ? { sessionId: sessionId as Id<"sessions"> } : "skip");
 
   if (!sessionId) {
     return (
@@ -50,10 +77,10 @@ export function WorkoutFinishedPage() {
     acc[set.exercise].push(set);
     return acc;
   }, {});
+  console.log("🚀 ~ WorkoutFinishedPage ~ exerciseGroups:", exerciseGroups);
 
-  const duration = session.endedAt && session.startedAt
-    ? Math.round((session.endedAt - session.startedAt) / 1000 / 60)
-    : 0;
+  const duration =
+    session.endedAt && session.startedAt ? Math.round((session.endedAt - session.startedAt) / 1000 / 60) : 0;
 
   const shouldCelebrate = celebrate === "true";
 
@@ -125,10 +152,7 @@ export function WorkoutFinishedPage() {
 
                 <div className="space-y-2">
                   {exerciseSets.map((set: any, idx: number) => (
-                    <div
-                      key={set._id}
-                      className="rounded-lg border bg-card/50 px-4 py-3 space-y-2"
-                    >
+                    <div key={set._id} className="rounded-lg border bg-card/50 px-4 py-3 space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium">Set {idx + 1}</span>
                         <span className="font-mono text-sm">
@@ -137,47 +161,12 @@ export function WorkoutFinishedPage() {
                       </div>
 
                       {set.feedback && (
-                        <div
-                          className={`rounded px-3 py-2 text-xs ${
-                            set.feedbackType === "excellent"
-                              ? "bg-green-50 text-green-900 border border-green-200"
-                              : set.feedbackType === "good"
-                                ? "bg-blue-50 text-blue-900 border border-blue-200"
-                                : set.feedbackType === "moderate"
-                                  ? "bg-yellow-50 text-yellow-900 border border-yellow-200"
-                                  : "bg-orange-50 text-orange-900 border border-orange-200"
-                          }`}
-                        >
-                          <p className="font-medium">{set.feedback}</p>
-
+                        <div className="rounded px-3 py-2 text-xs">
                           {set.attribution && (
-                            <div className="mt-2 pt-2 border-t border-current/20">
-                              <p className="text-xs text-muted-foreground mb-2">📚 {set.attribution.text}</p>
-                              {set.attribution.studies && set.attribution.studies.length > 0 && (
-                                <div className="space-y-2">
-                                  <p className="text-xs font-medium">Supporting Research:</p>
-                                  {set.attribution.studies.slice(0, 2).map((study: any, studyIndex: number) => (
-                                    <div
-                                      key={studyIndex}
-                                      className="text-xs p-2 rounded bg-background/50 border border-border space-y-1"
-                                    >
-                                      <p className="font-medium text-primary">{study.metadata?.title || "Research Study"}</p>
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => window.open(study.url, "_blank", "noopener,noreferrer")}
-                                        className="text-xs px-2 py-1 h-auto w-full mt-1"
-                                      >
-                                        🔗 Read Study
-                                      </Button>
-                                    </div>
-                                  ))}
-                                  {set.attribution.studies.length > 2 && (
-                                    <p className="text-xs text-muted-foreground">
-                                      ...and {set.attribution.studies.length - 2} more studies
-                                    </p>
-                                  )}
-                                </div>
+                            <div className="mt-1 pt-1 border-t border-current/20 space-y-1">
+                              <p className="text-xs text-muted-foreground">📚 {set.attribution.text}</p>
+                              {set.attribution.urls && set.attribution.urls.length > 0 && (
+                                <ExpandableUrls urls={set.attribution.urls} />
                               )}
                             </div>
                           )}
