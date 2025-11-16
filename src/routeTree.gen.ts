@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WorkoutFinishedRouteImport } from './routes/workout-finished'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiAutumnSplatRouteImport } from './routes/api/autumn.$'
 
+const WorkoutFinishedRoute = WorkoutFinishedRouteImport.update({
+  id: '/workout-finished',
+  path: '/workout-finished',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
@@ -32,35 +38,46 @@ const ApiAutumnSplatRoute = ApiAutumnSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/pricing': typeof PricingRoute
+  '/workout-finished': typeof WorkoutFinishedRoute
   '/api/autumn/$': typeof ApiAutumnSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/pricing': typeof PricingRoute
+  '/workout-finished': typeof WorkoutFinishedRoute
   '/api/autumn/$': typeof ApiAutumnSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/pricing': typeof PricingRoute
+  '/workout-finished': typeof WorkoutFinishedRoute
   '/api/autumn/$': typeof ApiAutumnSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/pricing' | '/api/autumn/$'
+  fullPaths: '/' | '/pricing' | '/workout-finished' | '/api/autumn/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/pricing' | '/api/autumn/$'
-  id: '__root__' | '/' | '/pricing' | '/api/autumn/$'
+  to: '/' | '/pricing' | '/workout-finished' | '/api/autumn/$'
+  id: '__root__' | '/' | '/pricing' | '/workout-finished' | '/api/autumn/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PricingRoute: typeof PricingRoute
+  WorkoutFinishedRoute: typeof WorkoutFinishedRoute
   ApiAutumnSplatRoute: typeof ApiAutumnSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/workout-finished': {
+      id: '/workout-finished'
+      path: '/workout-finished'
+      fullPath: '/workout-finished'
+      preLoaderRoute: typeof WorkoutFinishedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pricing': {
       id: '/pricing'
       path: '/pricing'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PricingRoute: PricingRoute,
+  WorkoutFinishedRoute: WorkoutFinishedRoute,
   ApiAutumnSplatRoute: ApiAutumnSplatRoute,
 }
 export const routeTree = rootRouteImport

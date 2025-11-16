@@ -9,7 +9,6 @@
  */
 
 import type * as algorithms from "../algorithms.js";
-import type * as autumn from "../autumn.js";
 import type * as sessions from "../sessions.js";
 import type * as sets from "../sets.js";
 import type * as sfrEmbeddings from "../sfrEmbeddings.js";
@@ -23,7 +22,6 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   algorithms: typeof algorithms;
-  autumn: typeof autumn;
   sessions: typeof sessions;
   sets: typeof sets;
   sfrEmbeddings: typeof sfrEmbeddings;

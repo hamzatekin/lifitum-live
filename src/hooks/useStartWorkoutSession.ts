@@ -13,7 +13,6 @@ export function useStartWorkoutSession(
 ) {
   const [starting, setStarting] = useState(false);
   const createSession = useMutation(api.sessions.createSession);
-  const trackUsage = useMutation(api.autumn.trackUsage);
 
   const onStartSession = async () => {
     if (!userId) return;
@@ -22,8 +21,6 @@ export function useStartWorkoutSession(
     try {
       const sessionId = await createSession({ userId: userId as any });
       setSessionId(sessionId as any);
-      // Track usage
-      await trackUsage({ userId, action: "session_started", amount: 1 });
     } catch (error) {
       console.error("Failed to start session:", error);
     } finally {
@@ -33,4 +30,3 @@ export function useStartWorkoutSession(
 
   return { onStartSession, starting };
 }
-

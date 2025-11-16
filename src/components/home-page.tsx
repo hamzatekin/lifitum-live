@@ -5,7 +5,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { useGlobalStore } from "@/store/global.store";
 import { api } from "convex/_generated/api";
 import { useState } from "react";
@@ -15,6 +14,7 @@ import { useLogSetWithValidation } from "@/hooks/useLogSetWithValidation";
 import { useRestoreActiveSession } from "@/hooks/useRestoreActiveSession";
 import { useStartWorkoutSession } from "@/hooks/useStartWorkoutSession";
 import { useIsPro } from "@/hooks/useIsPro";
+import { WelcomeScreen } from "@/components/welcome-screen";
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -33,6 +33,7 @@ export function HomePage() {
 
   const sets = useQuery(api.sets.getSets, sessionId ? { sessionId: sessionId as any } : "skip");
   const session = useQuery(api.sessions.getSession, sessionId ? { sessionId: sessionId as any } : "skip");
+  const finishedSessions = useQuery(api.sessions.getFinishedSessions, userId ? { userId: userId as any } : "skip");
 
   useEnsureAnonymousUser(deviceId, userId, setUserId);
   useRestoreActiveSession(userId, sessionId, setSessionId);
@@ -54,201 +55,245 @@ export function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto w-full max-w-2xl p-4 space-y-6 pb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Membership Status</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Current Plan</p>
-                <p className="text-2xl font-bold">
-                  {isPro ? <span className="text-green-600">Pro 🌟</span> : <span className="text-gray-600">Free</span>}
-                </p>
-              </div>
-              {!isPro && (
-                <Button onClick={() => navigate({ to: "/pricing" })} size="lg">
+        {/* Header */}
+        <div className="pt-6 pb-2">
+          <h1 className="text-3xl font-bold">liftium-live</h1>
+          <div className="mt-3 flex items-center gap-3 text-sm">
+            <span className="text-muted-foreground">
+              {isPro ? (
+                <span className="text-green-600 font-medium">✨ Pro Member</span>
+              ) : (
+                <span className="text-muted-foreground">Free Plan</span>
+              )}
+            </span>
+            {!isPro && (
+              <>
+                <span className="text-muted-foreground">·</span>
+                <Button
+                  onClick={() => navigate({ to: "/pricing" })}
+                  variant="link"
+                  className="h-auto p-0 text-sm font-medium"
+                >
                   Upgrade to Pro
                 </Button>
-              )}
-            </div>
-            {isPro && <p className="text-sm text-muted-foreground">You have unlimited access to all features! 🎉</p>}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Workout Session</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap items-end gap-3">
-              <Button onClick={onStartSession} disabled={!userId || !!sessionId || starting} className="mt-6">
-                {sessionId ? "Session Active 🟢" : starting ? "Starting…" : "Start Session"}
-              </Button>
-              {sessionId && (
-                <Button onClick={handleEndSession} disabled={!sessionId || ending} variant="secondary">
-                  {ending ? "Ending…" : "End Session"}
-                </Button>
-              )}
-            </div>
-
-            {sessionId && (
-              <div className="text-xs text-muted-foreground break-all">
-                <span className="font-medium text-foreground">Session ID:</span> <code>{sessionId}</code>
-                {session?.endedAt ? (
-                  <p className="text-red-500 mt-1">Session ended at {new Date(session.endedAt).toLocaleTimeString()}</p>
-                ) : (
-                  <p className="text-green-500 mt-1">
-                    Session started at {new Date(session?.startedAt || 0).toLocaleTimeString()}
-                  </p>
-                )}
-              </div>
+              </>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Log Set</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div>
-              <Label aria-disabled={!sessionId} className="mb-1 block">
-                Exercise
-              </Label>
-              <Input value={exercise} disabled={!sessionId} onChange={(e) => setExercise(e.target.value)} />
-            </div>
+        {/* Welcome Screen for new users */}
+        {!sessionId && finishedSessions !== undefined && finishedSessions.length === 0 && <WelcomeScreen />}
 
-            <div className="grid grid-cols-3 gap-3">
-              <div>
-                <Label className="mb-1 block">Load (kg)</Label>
-                <Input
-                  type="number"
-                  value={String(load)}
-                  disabled={!sessionId}
-                  onChange={(e) => setLoad(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label className="mb-1 block">Reps</Label>
-                <Input
-                  type="number"
-                  value={String(reps)}
-                  disabled={!sessionId}
-                  onChange={(e) => setReps(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label className="mb-1 block">RIR</Label>
-                <Input
-                  type="number"
-                  value={String(rir)}
-                  disabled={!sessionId}
-                  onChange={(e) => setRir(Number(e.target.value))}
-                />
-              </div>
-            </div>
+        {/* Start Session Button */}
+        {!sessionId && (
+          <Button onClick={onStartSession} disabled={!userId || starting} size="lg" className="w-full">
+            {starting ? "Starting Session..." : "Start Workout Session"}
+          </Button>
+        )}
 
-            <Button
-              onClick={onLogSet}
-              disabled={!sessionId || !userId || logging || !exercise || !load || !reps || !rir}
-            >
-              {logging ? "Logging…" : "Log Set"}
-            </Button>
+        {/* Finished Workouts - Only show when no active session */}
+        {!sessionId && !!finishedSessions?.length && (
+          <div className="pt-4">
+            <h2 className="text-xl font-semibold mb-4">Previous Workouts</h2>
+            {!finishedSessions ? (
+              <p className="text-sm text-muted-foreground">Loading...</p>
+            ) : finishedSessions.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No finished workouts yet. Start your first session!</p>
+            ) : (
+              <div className="space-y-2">
+                {finishedSessions.map((workout: any) => {
+                  const duration =
+                    workout.endedAt && workout.startedAt
+                      ? Math.round((workout.endedAt - workout.startedAt) / 1000 / 60)
+                      : 0;
 
-            {!sessionId && <p className="text-xs text-destructive">Start a session first.</p>}
-
-            {lastFeedback && (
-              <div
-                className={`rounded-lg border px-3 py-2 text-sm transition-all ${
-                  lastFeedback.feedbackType === "excellent"
-                    ? "border-green-500 bg-green-50 text-green-900"
-                    : lastFeedback.feedbackType === "good"
-                      ? "border-blue-500 bg-blue-50 text-blue-900"
-                      : lastFeedback.feedbackType === "moderate"
-                        ? "border-yellow-500 bg-yellow-50 text-yellow-900"
-                        : "border-orange-500 bg-orange-50 text-orange-900"
-                }`}
-              >
-                <p className="font-medium">{lastFeedback.feedback}</p>
-
-                {lastFeedback.attribution && (
-                  <div className="mt-3 pt-3 border-t border-current/20">
-                    <p className="text-xs text-muted-foreground mb-2">📚 {lastFeedback.attribution.text}</p>
-                    {lastFeedback.attribution.studies && lastFeedback.attribution.studies.length > 0 && (
-                      <div className="space-y-2">
-                        <p className="text-xs font-medium text-foreground">Supporting Research:</p>
-                        {lastFeedback.attribution.studies.slice(0, 3).map((study, index) => (
-                          <div
-                            key={index}
-                            className="text-xs p-3 rounded bg-background/50 border border-border space-y-2"
-                          >
-                            <p className="font-medium text-primary">{study.metadata?.title || "Research Study"}</p>
-                            <div className="flex items-center justify-between">
-                              <a
-                                href={study.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:text-blue-800 underline break-all flex-1 mr-2"
-                              >
-                                {study.url}
-                              </a>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => window.open(study.url, "_blank", "noopener,noreferrer")}
-                                className="text-xs px-2 py-1 h-auto"
-                              >
-                                🔗 Read Study
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                        {lastFeedback.attribution.studies.length > 3 && (
-                          <p className="text-xs text-muted-foreground">
-                            ...and {lastFeedback.attribution.studies.length - 3} more studies
+                  return (
+                    <button
+                      key={workout._id}
+                      onClick={() =>
+                        navigate({
+                          to: "/workout-finished",
+                          search: { sessionId: workout._id, celebrate: "" },
+                        })
+                      }
+                      className="w-full rounded-lg border bg-card hover:bg-accent transition-colors px-4 py-3 text-left"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">
+                            {new Date(workout.startedAt).toLocaleDateString(undefined, {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
                           </p>
-                        )}
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(workout.startedAt).toLocaleTimeString(undefined, {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                            {duration > 0 && ` · ${duration} min`}
+                          </p>
+                        </div>
+                        <svg
+                          className="w-5 h-5 text-muted-foreground"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
                       </div>
-                    )}
-                  </div>
-                )}
-
-                <button
-                  onClick={() => setLastFeedback(null)}
-                  className="text-xs mt-3 underline opacity-75 hover:opacity-100"
-                >
-                  Dismiss
-                </button>
+                    </button>
+                  );
+                })}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        )}
 
+        {/* Active Session */}
         {sessionId && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Sets in Session</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">Active Session</CardTitle>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-green-600 font-medium">● Live</span>
+                  <Button onClick={handleEndSession} disabled={ending} variant="destructive" size="sm">
+                    {ending ? "Finishing..." : "Finish Session"}
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent>
-              {!sessionId ? (
-                <p className="text-sm text-muted-foreground">No active session.</p>
-              ) : sets === undefined ? (
-                <p className="text-sm text-muted-foreground">Loading…</p>
-              ) : !sets || sets.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No sets logged.</p>
-              ) : (
-                <div className="max-h-96 overflow-y-auto space-y-2">
-                  <ul className="space-y-2">
+            <CardContent className="space-y-4">
+              {/* Log Set Form */}
+              <div className="space-y-3">
+                <div>
+                  <Label className="mb-1 block">Exercise</Label>
+                  <Input value={exercise} onChange={(e) => setExercise(e.target.value)} />
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <Label className="mb-1 block">Load (kg)</Label>
+                    <Input type="number" value={String(load)} onChange={(e) => setLoad(Number(e.target.value))} />
+                  </div>
+                  <div>
+                    <Label className="mb-1 block">Reps</Label>
+                    <Input
+                      type="number"
+                      value={String(reps)}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setReps(Math.max(0, Math.min(50, val)));
+                      }}
+                      min="0"
+                      max="50"
+                    />
+                  </div>
+                  <div>
+                    <Label className="mb-1 block">RIR</Label>
+                    <Input
+                      type="number"
+                      value={String(rir)}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setRir(Math.max(0, Math.min(6, val)));
+                      }}
+                      min="0"
+                      max="6"
+                    />
+                  </div>
+                </div>
+
+                <Button onClick={onLogSet} disabled={logging || !exercise || !load || !reps} className="w-full">
+                  {logging ? "Logging..." : "Log Set"}
+                </Button>
+
+                {lastFeedback && (
+                  <div
+                    className={`rounded-lg border px-3 py-2 text-sm transition-all ${
+                      lastFeedback.feedbackType === "excellent"
+                        ? "border-green-500 bg-green-50 text-green-900"
+                        : lastFeedback.feedbackType === "good"
+                          ? "border-blue-500 bg-blue-50 text-blue-900"
+                          : lastFeedback.feedbackType === "moderate"
+                            ? "border-yellow-500 bg-yellow-50 text-yellow-900"
+                            : "border-orange-500 bg-orange-50 text-orange-900"
+                    }`}
+                  >
+                    <p className="font-medium">{lastFeedback.feedback}</p>
+
+                    {lastFeedback.attribution && (
+                      <div className="mt-3 pt-3 border-t border-current/20">
+                        <p className="text-xs text-muted-foreground mb-2">📚 {lastFeedback.attribution.text}</p>
+                        {lastFeedback.attribution.studies && lastFeedback.attribution.studies.length > 0 && (
+                          <div className="space-y-2">
+                            <p className="text-xs font-medium text-foreground">Supporting Research:</p>
+                            {lastFeedback.attribution.studies.slice(0, 3).map((study, index) => (
+                              <div
+                                key={index}
+                                className="text-xs p-3 rounded bg-background/50 border border-border space-y-2"
+                              >
+                                <p className="font-medium text-primary">{study.metadata?.title || "Research Study"}</p>
+                                <div className="flex items-center justify-between">
+                                  <a
+                                    href={study.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:text-blue-800 underline break-all flex-1 mr-2"
+                                  >
+                                    {study.url}
+                                  </a>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => window.open(study.url, "_blank", "noopener,noreferrer")}
+                                    className="text-xs px-2 py-1 h-auto"
+                                  >
+                                    🔗 Read Study
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                            {lastFeedback.attribution.studies.length > 3 && (
+                              <p className="text-xs text-muted-foreground">
+                                ...and {lastFeedback.attribution.studies.length - 3} more studies
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => setLastFeedback(null)}
+                      className="text-xs mt-3 underline opacity-75 hover:opacity-100"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Sets in Current Session */}
+              {sets && sets.length > 0 && (
+                <div className="pt-4 border-t">
+                  <p className="text-sm font-medium mb-2">{sets.length} sets logged</p>
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
                     {sets.map((s: any) => (
-                      <li key={s._id} className="rounded-lg border bg-card px-3 py-2 text-sm">
+                      <div key={s._id} className="rounded border bg-card/50 px-3 py-2 text-sm space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="font-medium">{s.exercise}</span>
                           <span className="text-xs text-muted-foreground">
-                            {new Date(s.createdAt).toLocaleTimeString()}
+                            {new Date(s.createdAt).toLocaleTimeString(undefined, {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </span>
                         </div>
-                        <div className="text-foreground/90">
+                        <div className="text-muted-foreground">
                           {s.load}kg × {s.reps} @RIR {s.rir}
                         </div>
                         {s.feedback && (
@@ -286,16 +331,14 @@ export function HomePage() {
                             )}
                           </div>
                         )}
-                      </li>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
             </CardContent>
           </Card>
         )}
-
-        <Separator />
       </div>
     </div>
   );

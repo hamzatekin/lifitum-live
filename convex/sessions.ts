@@ -38,3 +38,16 @@ export const getActiveSession = query({
     return null;
   },
 });
+
+export const getFinishedSessions = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, { userId }) => {
+    const sessions = await ctx.db
+      .query("sessions")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .order("desc")
+      .collect();
+
+    return sessions.filter((s) => s.endedAt !== undefined);
+  },
+});
