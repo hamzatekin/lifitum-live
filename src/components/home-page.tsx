@@ -86,28 +86,6 @@ export function HomePage() {
               </>
             )}
           </div>
-
-          {/* Test Sentry Button */}
-          <div className="mt-4">
-            <Button
-              onClick={() => {
-                try {
-                  throw new Error("Test Sentry Error - This is a test error to verify Sentry integration");
-                } catch (error) {
-                  Sentry.captureException(error, {
-                    tags: { test: true, feature: "sentry-test" },
-                    extra: { userAction: "Test Sentry Button Clicked" },
-                  });
-                  console.error("Test error sent to Sentry:", error);
-                  alert("Test error sent to Sentry! Check your Sentry dashboard.");
-                }
-              }}
-              variant="outline"
-              size="sm"
-            >
-              🧪 Test Sentry
-            </Button>
-          </div>
         </div>
 
         {/* Welcome Screen for new users */}

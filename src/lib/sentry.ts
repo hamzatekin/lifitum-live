@@ -11,11 +11,6 @@ export function initSentry() {
 
   Sentry.init({
     dsn,
-    integrations: [
-      Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
-      Sentry.browserTracingIntegration(),
-      Sentry.replayIntegration(),
-    ],
     // Performance Monitoring
     tracesSampleRate: 0.1, // Capture 10% of transactions
     // Session Replay
