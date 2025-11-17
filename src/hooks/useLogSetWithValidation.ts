@@ -40,7 +40,7 @@ export function useLogSetWithValidation(userId: Id<"users"> | null, sessionId: I
         rir: Number(setData.rir),
       });
 
-      if (result && "feedback" in result && "feedbackType" in result) {
+      if (result && typeof result === "object" && "feedback" in result && "feedbackType" in result) {
         setLastFeedback({
           feedback: (result as any).feedback,
           feedbackType: (result as any).feedbackType,
